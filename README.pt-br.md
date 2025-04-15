@@ -6,6 +6,20 @@ Uma ferramenta de linha de comando para compilar e executar arquivos C/C++ com u
 
 CExec é uma ferramenta leve desenvolvida em GO, projetada para simplificar a compilação e execução de programas C/C++. Com apenas um comando no terminal, ela automatiza todo o processo, tornando mais fácil para os desenvolvedores testarem e executarem seu código. Projetada para eficiência, o CExec simplifica os fluxos de trabalho combinando ambas as etapas em uma única ação intuitiva.
 
+## Abordagem Tradicional vs CExec
+
+### Abordagem Tradicional
+
+O método tradicional requer múltiplos comandos para compilar e depois executar programas C/C++:
+
+![Compilação e Execução Tradicional de C/C++](docs/assets/ex1.gif)
+
+### Abordagem com CExec
+
+Com o CExec, todo o processo é simplificado em um único comando:
+
+![Compilação e Execução com CExec](docs/assets/ex2.gif)
+
 ## Pré-requisitos
 
 - Go (para construir a partir do código-fonte)
