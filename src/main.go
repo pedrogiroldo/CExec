@@ -1,28 +1,37 @@
 package main
 
 import (
+	"CExec/src/argsReader"
 	"CExec/src/compiler"
-	"CExec/src/fileReader"
 	"CExec/src/runner"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
+	// 1. Primeiro, tenta ler o arquivo de configuração (se existir)
+	var config argsReader.ConfigArgs
+	fileExists := argsReader.FileExists()
 
-	config := fileReader.ReadFile()
+	if fileExists {
+		config = argsReader.ReadFile()
+	}
+
+	// 2. Em seguida, lê as flags da linha de comando (que sobrescrevem as configurações do arquivo)
+	config = argsReader.ReadFlags(config)
 
 	// Determina o arquivo fonte a ser compilado
 	var arquivo string
-	if len(os.Args) >= 2 {
-		// Se um arquivo for fornecido via linha de comando, ele tem precedência
-		arquivo = os.Args[1]
-	} else if config.SourceFile != "" {
-		// Caso contrário, usa o arquivo especificado na configuração
+	if config.SourceFile != "" {
+		// Usa o arquivo especificado via flag ou configuração
 		arquivo = config.SourceFile
+	} else if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], "-") {
+		// Se o primeiro argumento não for uma flag, considera como o arquivo fonte
+		arquivo = os.Args[1]
 	} else {
 		// Se nenhum arquivo for especificado, exibe uma mensagem de erro
-		fmt.Fprintf(os.Stderr, "Nenhum arquivo fonte especificado.\nUso: %s [arquivo.(c/cpp)] ou defina 'sourceFile' no arquivo de configuração.\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Nenhum arquivo fonte especificado.\nUso: %s [arquivo.(c/cpp)] ou defina a flag '-source' ou 'sourceFile' no arquivo de configuração.\n", os.Args[0])
 		os.Exit(1)
 	}
 

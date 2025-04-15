@@ -1,14 +1,14 @@
 package runner
 
 import (
+	"CExec/src/argsReader"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
-	"CExec/src/fileReader"
 )
 
-func Run(config fileReader.ConfigFile, output string) {
+func Run(config argsReader.ConfigArgs, output string) {
 	execPath := "." + string(os.PathSeparator) + output
 
 	if config.CustomRunCommand != "" {

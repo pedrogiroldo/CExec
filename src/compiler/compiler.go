@@ -1,14 +1,14 @@
 package compiler
 
 import (
-	"CExec/src/fileReader"
+	"CExec/src/argsReader"
 	"fmt"
 	"os"
 	"os/exec"
 )
 
 func Compile(
-	config fileReader.ConfigFile,
+	config argsReader.ConfigArgs,
 	arquivo string,
 	output string,
 ) {
