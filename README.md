@@ -114,9 +114,6 @@ The executable automatically detects the operating system and adjusts the output
 - On Linux/Unix systems: `output`
 - On Windows systems: `output.exe`
 
-## License
-
-[Add license information]
 
 ## Contributions
 
