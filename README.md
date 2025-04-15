@@ -1,107 +1,109 @@
 # CExec
 
-Uma ferramenta de linha de comando para compilar e executar arquivos C/C++ com um único comando.
+A command-line tool to compile and run C/C++ files with a single command.
 
-## Sobre
+[🇧🇷 Portuguese Version (Versão em Português)](README.pt-br.md)
 
-CExec é uma ferramenta simples desenvolvida em Go que automatiza o processo de compilação e execução de programas C/C++. Ela elimina a necessidade de digitar comandos separados para compilar e depois executar seu código.
+## About
 
-## Pré-requisitos
+CExec is a simple tool developed in Go that automates the process of compiling and running C/C++ programs. It eliminates the need to type separate commands to compile and then run your code.
 
-- Go (para construir a partir do código-fonte)
-- Um compilador C/C++ (como g++)
+## Prerequisites
 
-## Instalação
+- Go (to build from source)
+- A C/C++ compiler (such as g++)
 
-### A partir do código-fonte
+## Installation
 
-1. Clone este repositório
-2. Compile o programa:
+### From source
+
+1. Clone this repository
+2. Compile the program:
 
 ```bash
 go build -o build/CExec src/main.go
 ```
 
-3. Adicione o executável compilado ao seu PATH para uso global (opcional)
+3. Add the compiled executable to your PATH for global usage (optional)
 
-## Uso
+## Usage
 
-### Uso básico
+### Basic usage
 
 ```bash
-CExec arquivo.(c/cpp)
+CExec file.(c/cpp)
 ```
 
-O programa irá:
+The program will:
 
-1. Compilar o arquivo C/C++ especificado usando o compilador configurado
-2. Executar o programa resultante (se configurado)
-3. Exibir a saída do programa
+1. Compile the specified C/C++ file using the configured compiler
+2. Run the resulting program (if configured)
+3. Display the program output
 
-### Arquivo de configuração
+### Configuration file
 
-O CExec pode ser configurado através de um arquivo JSON chamado `CExecConfig.json`. Este arquivo deve estar no mesmo diretório de onde o CExec é executado.
+CExec can be configured through a JSON file called `CExecConfig.json`. This file should be in the same directory from where CExec is executed.
 
-Exemplo de `CExecConfig.json`:
+Example of `CExecConfig.json`:
 
 ```json
 {
   "compilerPath": "/usr/bin/g++",
   "compilerArgs": ["-Wall", "-std=c++17"],
-  "outputName": "meu_programa",
+  "outputName": "my_program",
   "runAfterCompile": true,
   "customRunCommand": "arg1 arg2",
   "sourceFile": "main.cpp"
 }
 ```
 
-#### Opções de configuração:
+#### Configuration options:
 
-| Opção              | Descrição                                             | Obrigatório                                       |
-| ------------------ | ----------------------------------------------------- | ------------------------------------------------- |
-| `compilerPath`     | Caminho para o compilador (ex: g++)                   | Sim                                               |
-| `compilerArgs`     | Lista de argumentos para o compilador                 | Não                                               |
-| `outputName`       | Nome do arquivo executável gerado                     | Não (padrão: "output" ou "output.exe" no Windows) |
-| `runAfterCompile`  | Se o programa deve ser executado após a compilação    | Não (padrão: false)                               |
-| `customRunCommand` | Argumentos para passar ao programa durante a execução | Não                                               |
-| `sourceFile`       | Arquivo fonte padrão a ser compilado                  | Não (pode ser sobrescrito via linha de comando)   |
+| Option             | Description                                              | Required                                          |
+| ------------------ | -------------------------------------------------------- | ------------------------------------------------- |
+| `compilerPath`     | Path to the compiler (e.g., g++)                         | Yes                                               |
+| `compilerArgs`     | List of arguments for the compiler                       | No                                                |
+| `outputName`       | Name of the generated executable file                    | No (default: "output" or "output.exe" on Windows) |
+| `runAfterCompile`  | Whether the program should be executed after compilation | No (default: false)                               |
+| `customRunCommand` | Arguments to pass to the program during execution        | No                                                |
+| `sourceFile`       | Default source file to be compiled                       | No (can be overridden via command line)           |
 
-**Nota:** Quando um arquivo é especificado via linha de comando, ele tem precedência sobre o arquivo definido na configuração.
+**Note:** When a file is specified via the command line, it takes precedence over the file defined in the configuration.
 
-## Exemplo
+## Example
 
 ```bash
-$ CExec meu_programa.cpp
+$ CExec my_program.cpp
 ```
 
-Se o programa `meu_programa.cpp` contiver:
+If the program `my_program.cpp` contains:
 
 ```cpp
 #include <iostream>
 
 int main() {
-    std::cout << "Olá, mundo!" << std::endl;
+    std::cout << "Hello, world!" << std::endl;
     return 0;
 }
 ```
 
-A saída será:
+The output will be:
 
 ```
-Olá, mundo!
+Hello, world!
 ```
 
-## Notas de compatibilidade
+## Compatibility notes
 
-O executável detecta automaticamente o sistema operacional e ajusta o nome do arquivo de saída:
+The executable automatically detects the operating system and adjusts the output file name:
 
-- Em sistemas Linux/Unix: `output`
-- Em sistemas Windows: `output.exe`
+- On Linux/Unix systems: `output`
+- On Windows systems: `output.exe`
 
-## Licença
+## License
 
-[Adicionar informações de licença]
+[Add license information]
 
-## Contribuições
+## Contributions
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+Contributions are welcome! Feel free to open issues or submit pull requests.
