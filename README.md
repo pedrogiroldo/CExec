@@ -6,7 +6,7 @@ A command-line tool to compile and run C/C++ files with a single command.
 
 ## About
 
-CExec is a simple tool developed in Go that automates the process of compiling and running C/C++ programs. It eliminates the need to type separate commands to compile and then run your code.
+CExec is a lightweight GO tool crafted to streamline the compilation and execution of C/C++ programs. With just one terminal command, it automates the entire process, making it effortless for developers to test and run their code. Designed for efficiency, CExec simplifies workflows by combining both steps into a single, intuitive action.
 
 ## Prerequisites
 
