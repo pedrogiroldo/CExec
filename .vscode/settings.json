@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "*.sqlbook": "sql",
+    "*.ndjson": "jsonl",
+    "*.dbclient-js": "javascript",
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript",
+    "*.conf": "plaintext",
+    "stdio.h": "c"
+  }
+}
