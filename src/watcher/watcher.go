@@ -3,6 +3,7 @@ package watcher
 import (
 	"CExec/src/argsReader"
 	"CExec/src/compiler"
+	"CExec/src/runner"
 	"CExec/src/utils"
 	"fmt"
 	"log"
@@ -10,7 +11,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"regexp"
-	"strings"
 	"syscall"
 	"time"
 
@@ -70,21 +70,11 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 
 		// Compila o arquivo
 		if compiler.Compile(config, file, output) {
-			// Executa o programa sem bloquear o watcher
-			execPath := "." + string(os.PathSeparator) + output
+			// Inicia o programa de forma assíncrona usando o pacote runner
+			var err error
+			currentCmd, err = runner.StartAsync(config, output)
 
-			if config.CustomRunCommand != "" {
-				args := strings.Fields(config.CustomRunCommand)
-				currentCmd = exec.Command(execPath, args...)
-			} else {
-				currentCmd = exec.Command(execPath)
-			}
-
-			currentCmd.Stdout = os.Stdout
-			currentCmd.Stderr = os.Stderr
-			currentCmd.Stdin = os.Stdin
-
-			if err := currentCmd.Start(); err != nil {
+			if err != nil {
 				fmt.Fprintf(os.Stderr, "Erro ao iniciar a execução: %v\n", err)
 			} else {
 				fmt.Println("Programa iniciado. Monitorando mudanças...")
