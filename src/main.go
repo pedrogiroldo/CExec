@@ -44,12 +44,11 @@ func main() {
 		output = "output.exe"
 	}
 
-	compiler.Compile(config, arquivo, output)
-
 	if config.WatchChanges {
 		watcher.Watch(config, arquivo, output)
 	} else {
 		if config.RunAfterCompile {
+			compiler.Compile(config, arquivo, output)
 			runner.Run(config, output)
 		}
 

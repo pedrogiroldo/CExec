@@ -3,6 +3,7 @@ package watcher
 import (
 	"CExec/src/argsReader"
 	"CExec/src/compiler"
+	"CExec/src/utils"
 	"fmt"
 	"log"
 	"os"
@@ -33,6 +34,18 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 	// Variável para armazenar o processo em execução
 	var currentCmd *exec.Cmd
 
+	resetTerminal := func() {
+		// Comandos para restaurar o terminal ao estado normal
+		resetCmd := exec.Command("stty", "sane")
+		resetCmd.Stdin = os.Stdin
+		resetCmd.Stdout = os.Stdout
+		resetCmd.Run()
+
+		// Limpa a tela e posiciona o cursor
+		fmt.Print("\033[H\033[2J")
+		fmt.Println("Processo do programa encerrado. Monitorando alterações...")
+	}
+
 	// Função para encerrar o processo atual se existir
 	killCurrentProcess := func() {
 		if currentCmd != nil && currentCmd.Process != nil {
@@ -45,46 +58,57 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 			// Caso ainda esteja rodando, força o encerramento
 			_ = currentCmd.Process.Kill()
 			currentCmd = nil
+
+			resetTerminal()
+		}
+	}
+
+	// Função para compilar e executar o programa
+	compileAndRun := func() {
+		// Encerra o processo atual antes de recompilar
+		killCurrentProcess()
+
+		// Compila o arquivo
+		if compiler.Compile(config, file, output) {
+			// Executa o programa sem bloquear o watcher
+			execPath := "." + string(os.PathSeparator) + output
+
+			if config.CustomRunCommand != "" {
+				args := strings.Fields(config.CustomRunCommand)
+				currentCmd = exec.Command(execPath, args...)
+			} else {
+				currentCmd = exec.Command(execPath)
+			}
+
+			currentCmd.Stdout = os.Stdout
+			currentCmd.Stderr = os.Stderr
+			currentCmd.Stdin = os.Stdin
+
+			if err := currentCmd.Start(); err != nil {
+				fmt.Fprintf(os.Stderr, "Erro ao iniciar a execução: %v\n", err)
+			} else {
+				fmt.Println("Programa iniciado. Monitorando mudanças...")
+
+				// Monitora o término do processo sem bloquear
+				go func(cmd *exec.Cmd) {
+					_ = cmd.Wait()
+				}(currentCmd)
+			}
 		}
 	}
 
 	// Mensagem informativa sobre como sair
 	fmt.Println("\nModo watch iniciado. Pressione Ctrl+C para sair.")
 
+	// Compila e executa o programa imediatamente ao iniciar o modo watch
+	compileAndRun()
+
 	go func() {
 		for {
 			select {
 			case <-w.Event:
-				// Encerra o processo atual antes de recompilar
-				killCurrentProcess()
-
-				// Compila o arquivo
-				if compiler.Compile(config, file, output) {
-					// Executa o programa sem bloquear o watcher
-					execPath := "." + string(os.PathSeparator) + output
-
-					if config.CustomRunCommand != "" {
-						args := strings.Fields(config.CustomRunCommand)
-						currentCmd = exec.Command(execPath, args...)
-					} else {
-						currentCmd = exec.Command(execPath)
-					}
-
-					currentCmd.Stdout = os.Stdout
-					currentCmd.Stderr = os.Stderr
-					currentCmd.Stdin = os.Stdin
-
-					if err := currentCmd.Start(); err != nil {
-						fmt.Fprintf(os.Stderr, "Erro ao iniciar a execução: %v\n", err)
-					} else {
-						fmt.Println("Programa iniciado. Monitorando mudanças...")
-
-						// Monitora o término do processo sem bloquear
-						go func(cmd *exec.Cmd) {
-							_ = cmd.Wait()
-						}(currentCmd)
-					}
-				}
+				utils.ClearTerminal()
+				compileAndRun()
 			case err := <-w.Error:
 				log.Fatalln(err)
 			case <-w.Closed:
