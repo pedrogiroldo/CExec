@@ -3,12 +3,14 @@ package watcher
 import (
 	"CExec/src/argsReader"
 	"CExec/src/compiler"
-	"CExec/src/runner"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"regexp"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/radovskyb/watcher"
@@ -28,6 +30,24 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
 
+	// Variável para armazenar o processo em execução
+	var currentCmd *exec.Cmd
+
+	// Função para encerrar o processo atual se existir
+	killCurrentProcess := func() {
+		if currentCmd != nil && currentCmd.Process != nil {
+			// Tenta encerrar o processo de forma limpa
+			_ = currentCmd.Process.Signal(syscall.SIGTERM)
+
+			// Aguarda um curto tempo para encerramento limpo
+			time.Sleep(100 * time.Millisecond)
+
+			// Caso ainda esteja rodando, força o encerramento
+			_ = currentCmd.Process.Kill()
+			currentCmd = nil
+		}
+	}
+
 	// Mensagem informativa sobre como sair
 	fmt.Println("\nModo watch iniciado. Pressione Ctrl+C para sair.")
 
@@ -35,8 +55,36 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 		for {
 			select {
 			case <-w.Event:
-				compiler.Compile(config, file, output)
-				runner.Run(config, output)
+				// Encerra o processo atual antes de recompilar
+				killCurrentProcess()
+
+				// Compila o arquivo
+				if compiler.Compile(config, file, output) {
+					// Executa o programa sem bloquear o watcher
+					execPath := "." + string(os.PathSeparator) + output
+
+					if config.CustomRunCommand != "" {
+						args := strings.Fields(config.CustomRunCommand)
+						currentCmd = exec.Command(execPath, args...)
+					} else {
+						currentCmd = exec.Command(execPath)
+					}
+
+					currentCmd.Stdout = os.Stdout
+					currentCmd.Stderr = os.Stderr
+					currentCmd.Stdin = os.Stdin
+
+					if err := currentCmd.Start(); err != nil {
+						fmt.Fprintf(os.Stderr, "Erro ao iniciar a execução: %v\n", err)
+					} else {
+						fmt.Println("Programa iniciado. Monitorando mudanças...")
+
+						// Monitora o término do processo sem bloquear
+						go func(cmd *exec.Cmd) {
+							_ = cmd.Wait()
+						}(currentCmd)
+					}
+				}
 			case err := <-w.Error:
 				log.Fatalln(err)
 			case <-w.Closed:
@@ -45,7 +93,7 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 		}
 	}()
 
-	if err := w.Add("."); err != nil {
+	if err := w.AddRecursive("."); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -53,6 +101,7 @@ func Watch(config argsReader.ConfigArgs, file string, output string) {
 	go func() {
 		<-signalChan
 		fmt.Println("\nEncerrando o modo watch...")
+		killCurrentProcess()
 		w.Close()
 		os.Exit(0)
 	}()
