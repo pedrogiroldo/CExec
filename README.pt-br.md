@@ -20,6 +20,31 @@ Com o CExec, todo o processo é simplificado em um único comando:
 
 ![Compilação e Execução com CExec](docs/assets/ex2.gif)
 
+## ✨ Modo Watch: Desenvolvimento Contínuo em Tempo Real! ✨
+
+**Aumente sua produtividade com o poderoso modo Watch!** 🚀
+
+O modo Watch do CExec transforma completamente sua experiência de desenvolvimento em C/C++. Com ele ativado, você pode:
+
+- **Esquecer os comandos repetitivos** - enquanto você escreve código, o CExec observa suas alterações e recompila automaticamente.
+- **Ver resultados instantaneamente** - cada vez que você salva um arquivo, seu código é recompilado e executado imediatamente.
+- **Focar no que realmente importa: seu código** - nada de ficar alternando entre editor e terminal!
+
+É como ter um assistente de programação que executa seu código sempre que você faz uma mudança. Perfeito para:
+
+- Desenvolvimento iterativo e incremental
+- Aprendizado de C/C++
+- Debugging rápido
+- Testes imediatos de pequenas alterações
+
+### Como usar:
+
+```bash
+CExec -watch=true meu_programa.cpp
+```
+
+Pronto! Agora você pode editar seu arquivo com tranquilidade - a cada salvamento, o CExec irá recompilar e executar seu programa automaticamente, exibindo os resultados no terminal.
+
 ## Pré-requisitos
 
 - Go (para construir a partir do código-fonte)
@@ -60,21 +85,13 @@ Você também pode usar flags na linha de comando para personalizar o comportame
 CExec -compiler=/caminho/para/g++ -args="-Wall,-std=c++17" -output=meu_programa -run=true -source=main.cpp -watch=true
 ```
 
-| Flag        | Descrição                                                | Padrão                              |
-| ----------- | -------------------------------------------------------- | ----------------------------------- |
-| `-compiler` | Caminho para o compilador                                | Do arquivo de config ou obrigatório |
-| `-args`     | Argumentos do compilador (separados por vírgula)         | Do arquivo de config ou nenhum      |
-| `-output`   | Nome do executável de saída                              | "output" ou "output.exe" (Windows)  |
-| `-run`      | Se deve executar o programa após a compilação            | Do arquivo de config ou false       |
-| `-run-cmd`  | Argumentos personalizados para passar ao programa        | Do arquivo de config ou nenhum      |
-| `-source`   | Arquivo fonte a ser compilado                            | Do arquivo de config ou obrigatório |
-| `-watch`    | Ativar modo de monitoramento para recompilar em mudanças | Do arquivo de config ou false       |
+## 🔧 Configurando o CExec
 
-### Arquivo de configuração
+O CExec oferece **duas maneiras flexíveis de configuração**:
 
-O CExec pode ser configurado através de um arquivo JSON chamado `CExecConfig.json`. Este arquivo deve estar no mesmo diretório de onde o CExec é executado.
+### 1️⃣ Arquivo de Configuração JSON
 
-Exemplo de `CExecConfig.json`:
+Você pode criar um arquivo `CExecConfig.json` no diretório de trabalho para configurações permanentes:
 
 ```json
 {
@@ -88,19 +105,35 @@ Exemplo de `CExecConfig.json`:
 }
 ```
 
-#### Opções de configuração:
+### 2️⃣ Flags de Linha de Comando
 
-| Opção              | Descrição                                                | Obrigatório                                       |
-| ------------------ | -------------------------------------------------------- | ------------------------------------------------- |
-| `compilerPath`     | Caminho para o compilador (ex: g++)                      | Sim                                               |
-| `compilerArgs`     | Lista de argumentos para o compilador                    | Não                                               |
-| `outputName`       | Nome do arquivo executável gerado                        | Não (padrão: "output" ou "output.exe" no Windows) |
-| `runAfterCompile`  | Se o programa deve ser executado após a compilação       | Não (padrão: false)                               |
-| `customRunCommand` | Argumentos para passar ao programa durante a execução    | Não                                               |
-| `sourceFile`       | Arquivo fonte padrão a ser compilado                     | Não (pode ser sobrescrito via linha de comando)   |
-| `watchChanges`     | Ativar modo de monitoramento para recompilar em mudanças | Não (padrão: false)                               |
+Para uso rápido ou para substituir configurações do arquivo JSON, use flags de linha de comando:
 
-**Nota:** Quando um arquivo é especificado via linha de comando, ele tem precedência sobre o arquivo definido na configuração.
+```bash
+CExec -compiler=/caminho/para/g++ -args="-Wall,-std=c++17" -output=meu_programa -run=true -source=main.cpp -watch=true
+```
+
+### Prioridade das Configurações
+
+O CExec segue uma ordem clara para determinar qual configuração usar:
+
+1. **Flags de linha de comando** (maior prioridade) - substituem qualquer outra configuração
+2. **Arquivo CExecConfig.json** (prioridade média) - usado quando as flags não estão presentes
+3. **Valores padrão** (menor prioridade) - usados quando nenhuma outra configuração é fornecida
+
+Isso permite ter um arquivo de configuração para seus valores padrão, enquanto mantém a flexibilidade para substituições rápidas via linha de comando quando necessário.
+
+### Opções de configuração:
+
+| Opção                    | Descrição                                                | Flag relacionada | Config JSON        | Obrigatório                                         |
+| ------------------------ | -------------------------------------------------------- | ---------------- | ------------------ | --------------------------------------------------- |
+| Caminho do compilador    | Caminho para o compilador (ex: g++)                      | `-compiler`      | `compilerPath`     | Sim                                                 |
+| Argumentos do compilador | Lista de argumentos para o compilador                    | `-args`          | `compilerArgs`     | Não                                                 |
+| Nome do executável       | Nome do arquivo executável gerado                        | `-output`        | `outputName`       | Não (padrão: "output" ou "output.exe" no Windows)   |
+| Executar após compilar   | Se o programa deve ser executado após a compilação       | `-run`           | `runAfterCompile`  | Não (padrão: false)                                 |
+| Argumentos de execução   | Argumentos para passar ao programa durante a execução    | `-run-cmd`       | `customRunCommand` | Não                                                 |
+| Arquivo fonte            | Arquivo fonte a ser compilado                            | `-source`        | `sourceFile`       | Não (pode ser especificado como primeiro argumento) |
+| Modo watch               | Ativar modo de monitoramento para recompilar em mudanças | `-watch`         | `watchChanges`     | Não (padrão: false)                                 |
 
 ## Exemplo
 

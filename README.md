@@ -22,6 +22,31 @@ With CExec, the entire process is simplified into a single command:
 
 ![CExec Compilation and Execution](docs/assets/ex2.gif)
 
+## ✨ Watch Mode: Real-time Continuous Development! ✨
+
+**Boost your productivity with the powerful Watch Mode!** 🚀
+
+CExec's Watch Mode completely transforms your C/C++ development experience. With it enabled, you can:
+
+- **Forget repetitive commands** - while you write code, CExec watches your changes and automatically recompiles.
+- **See results instantly** - every time you save a file, your code is recompiled and run immediately.
+- **Focus on what really matters: your code** - no more switching between editor and terminal!
+
+It's like having a programming assistant that runs your code whenever you make a change. Perfect for:
+
+- Iterative and incremental development
+- Learning C/C++
+- Quick debugging
+- Instant testing of small changes
+
+### How to use:
+
+```bash
+CExec -watch=true my_program.cpp
+```
+
+That's it! Now you can edit your file with peace of mind - with each save, CExec will automatically recompile and run your program, displaying the results in the terminal.
+
 ## Prerequisites
 
 - Go (to build from source)
@@ -72,11 +97,13 @@ CExec -compiler=/path/to/g++ -args="-Wall,-std=c++17" -output=my_program -run=tr
 | `-source`   | Source file to compile                               | From config file or required       |
 | `-watch`    | Enable file watching mode to recompile on changes    | From config file or false          |
 
-### Configuration file
+## 🔧 Configuring CExec
 
-CExec can be configured through a JSON file called `CExecConfig.json`. This file should be in the same directory from where CExec is executed.
+CExec offers **two flexible configuration methods**:
 
-Example of `CExecConfig.json`:
+### 1️⃣ JSON Configuration File
+
+You can create a `CExecConfig.json` file in your working directory for permanent configurations:
 
 ```json
 {
@@ -90,19 +117,35 @@ Example of `CExecConfig.json`:
 }
 ```
 
-#### Configuration options:
+### 2️⃣ Command-line Flags
 
-| Option             | Description                                              | Required                                          |
-| ------------------ | -------------------------------------------------------- | ------------------------------------------------- |
-| `compilerPath`     | Path to the compiler (e.g., g++)                         | Yes                                               |
-| `compilerArgs`     | List of arguments for the compiler                       | No                                                |
-| `outputName`       | Name of the generated executable file                    | No (default: "output" or "output.exe" on Windows) |
-| `runAfterCompile`  | Whether the program should be executed after compilation | No (default: false)                               |
-| `customRunCommand` | Arguments to pass to the program during execution        | No                                                |
-| `sourceFile`       | Default source file to be compiled                       | No (can be overridden via command line)           |
-| `watchChanges`     | Enable file watching mode to recompile on changes        | No (default: false)                               |
+For quick usage or to override JSON file configurations, use command-line flags:
 
-**Note:** When a file is specified via the command line, it takes precedence over the file defined in the configuration.
+```bash
+CExec -compiler=/path/to/g++ -args="-Wall,-std=c++17" -output=my_program -run=true -source=main.cpp -watch=true
+```
+
+### Configuration Priority
+
+CExec follows a clear order to determine which configuration to use:
+
+1. **Command-line flags** (highest priority) - override any other configuration
+2. **CExecConfig.json file** (medium priority) - used when flags are not present
+3. **Default values** (lowest priority) - used when no other configuration is provided
+
+This allows you to have a configuration file for your default values, while maintaining flexibility for quick overrides via command line when needed.
+
+### Configuration options:
+
+| Option                | Description                                       | Related Flag | JSON Config        | Required                                          |
+| --------------------- | ------------------------------------------------- | ------------ | ------------------ | ------------------------------------------------- |
+| Compiler path         | Path to the compiler (e.g., g++)                  | `-compiler`  | `compilerPath`     | Yes                                               |
+| Compiler arguments    | List of arguments for the compiler                | `-args`      | `compilerArgs`     | No                                                |
+| Executable name       | Name of the generated executable file             | `-output`    | `outputName`       | No (default: "output" or "output.exe" on Windows) |
+| Run after compilation | Whether to execute the program after compilation  | `-run`       | `runAfterCompile`  | No (default: false)                               |
+| Run arguments         | Arguments to pass to the program during execution | `-run-cmd`   | `customRunCommand` | No                                                |
+| Source file           | Source file to be compiled                        | `-source`    | `sourceFile`       | No (can be specified as first argument)           |
+| Watch mode            | Enable file watching mode to recompile on changes | `-watch`     | `watchChanges`     | No (default: false)                               |
 
 ## Example
 
