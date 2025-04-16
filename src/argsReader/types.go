@@ -7,4 +7,5 @@ type ConfigArgs struct {
 	RunAfterCompile  bool     `json:"runAfterCompile"`            // Executar após compilar
 	CustomRunCommand string   `json:"customRunCommand,omitempty"` // Comando personalizado para execução
 	SourceFile       string   `json:"sourceFile,omitempty"`       // Arquivo fonte a ser compilado
+	WatchChanges     bool     `json:"watchChanges"`               // Habilitar monitoramento de alterações no arquivo fonte
 }

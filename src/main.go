@@ -4,6 +4,7 @@ import (
 	"CExec/src/argsReader"
 	"CExec/src/compiler"
 	"CExec/src/runner"
+	"CExec/src/watcher"
 	"fmt"
 	"os"
 	"strings"
@@ -45,8 +46,13 @@ func main() {
 
 	compiler.Compile(config, arquivo, output)
 
-	// Executa o programa compilado se configurado para isso
-	if config.RunAfterCompile {
-		runner.Run(config, output)
+	if config.WatchChanges {
+		watcher.Watch(config, arquivo, output)
+	} else {
+		if config.RunAfterCompile {
+			runner.Run(config, output)
+		}
+
 	}
+
 }

@@ -14,6 +14,7 @@ func ReadFlags(initialConfig ConfigArgs) ConfigArgs {
 	runAfterCompileDefault := false
 	customRunCommandDefault := ""
 	sourceFileDefault := ""
+	watchChangesDefault := false
 
 	// Verifica se uma configuração inicial foi fornecida verificando alguns de seus campos
 	configInitialized := initialConfig.CompilerPath != "" // Se pelo menos o caminho do compilador estiver definido
@@ -27,12 +28,14 @@ func ReadFlags(initialConfig ConfigArgs) ConfigArgs {
 			outputNameDefault = initialConfig.OutputName
 		}
 		runAfterCompileDefault = initialConfig.RunAfterCompile
+		watchChangesDefault = initialConfig.WatchChanges
 		if initialConfig.CustomRunCommand != "" {
 			customRunCommandDefault = initialConfig.CustomRunCommand
 		}
 		if initialConfig.SourceFile != "" {
 			sourceFileDefault = initialConfig.SourceFile
 		}
+
 	}
 
 	// Definição das flags correspondentes aos campos da estrutura ConfigArgs
@@ -42,6 +45,7 @@ func ReadFlags(initialConfig ConfigArgs) ConfigArgs {
 	runAfterCompile := flag.Bool("run", runAfterCompileDefault, "Executar após compilar")
 	customRunCommand := flag.String("run-cmd", customRunCommandDefault, "Comando personalizado para execução")
 	sourceFile := flag.String("source", sourceFileDefault, "Arquivo fonte a ser compilado")
+	watchChanges := flag.Bool("watch", watchChangesDefault, "Habilitar monitoramento de alterações no arquivo fonte")
 
 	// Analisa as flags
 	flag.Parse()
@@ -70,6 +74,7 @@ func ReadFlags(initialConfig ConfigArgs) ConfigArgs {
 		RunAfterCompile:  *runAfterCompile,
 		CustomRunCommand: *customRunCommand,
 		SourceFile:       *sourceFile,
+		WatchChanges:     *watchChanges,
 	}
 
 	// Atualiza a variável global Config
