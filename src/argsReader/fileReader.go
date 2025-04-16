@@ -14,6 +14,22 @@ func FileExists() bool {
 	return err == nil
 }
 
+// SaveConfigFile cria e salva um arquivo de configuração com os valores fornecidos
+func SaveConfigFile(config ConfigArgs) error {
+	jsonData, err := json.MarshalIndent(config, "", "  ")
+	if err != nil {
+		return fmt.Errorf("erro ao serializar a configuração: %v", err)
+	}
+
+	err = os.WriteFile(ConfigFilePath, jsonData, 0644)
+	if err != nil {
+		return fmt.Errorf("erro ao salvar o arquivo de configuração: %v", err)
+	}
+
+	fmt.Printf("Arquivo de configuração criado com sucesso: %s\n", ConfigFilePath)
+	return nil
+}
+
 func ReadFile() ConfigArgs {
 	// Variable declaration with error handling
 	file, err := os.Open(ConfigFilePath)

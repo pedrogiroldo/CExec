@@ -11,6 +11,46 @@ import (
 )
 
 func main() {
+	// Verifica se o comando init foi solicitado como subcomando
+	if len(os.Args) > 1 && os.Args[1] == "init" {
+
+		
+
+
+		// Configuração padrão para o comando init
+		defaultConfig := argsReader.ConfigArgs{
+			CompilerPath:     "g++",
+			CompilerArgs:     []string{"-std=c++17", "-Wall"},
+			OutputName:       "output",
+			RunAfterCompile:  true,
+			CustomRunCommand: "",
+			SourceFile:       "",
+			WatchChanges:     false,
+		}
+
+		// Verifica se já existe um arquivo de configuração
+		fileExists := argsReader.FileExists()
+		if fileExists {
+			fmt.Println("Já existe um arquivo de configuração. Deseja sobrescrevê-lo? (s/N):")
+			var resposta string
+			fmt.Scanln(&resposta)
+			resposta = strings.ToLower(resposta)
+
+			if resposta != "s" && resposta != "sim" && resposta != "y" && resposta != "yes" {
+				fmt.Println("Operação cancelada.")
+				os.Exit(0)
+			}
+		}
+
+		// Salva o arquivo de configuração
+		err := argsReader.SaveConfigFile(defaultConfig)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Erro ao criar arquivo de configuração: %v\n", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
 	// 1. Primeiro, tenta ler o arquivo de configuração (se existir)
 	var config argsReader.ConfigArgs
 	fileExists := argsReader.FileExists()
@@ -27,8 +67,8 @@ func main() {
 	if config.SourceFile != "" {
 		// Usa o arquivo especificado via flag ou configuração
 		arquivo = config.SourceFile
-	} else if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], "-") {
-		// Se o primeiro argumento não for uma flag, considera como o arquivo fonte
+	} else if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], "-") && os.Args[1] != "init" {
+		// Se o primeiro argumento não for uma flag ou o comando init, considera como o arquivo fonte
 		arquivo = os.Args[1]
 	} else {
 		// Se nenhum arquivo for especificado, exibe uma mensagem de erro
