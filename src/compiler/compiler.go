@@ -1,25 +1,24 @@
 package compiler
 
 import (
-	"CExec/src/fileReader"
+	"CExec/src/argsReader"
 	"fmt"
 	"os"
 	"os/exec"
 )
 
 func Compile(
-	config fileReader.ConfigFile,
+	config argsReader.ConfigArgs,
 	arquivo string,
 	output string,
-) {
+) bool {
 	// Define o comando do compilador e argumentos
 	var compilerCmd string
 	if config.CompilerPath != "" {
 		compilerCmd = config.CompilerPath
 	} else {
 		fmt.Printf("Compilador não especificado.")
-		os.Exit(1)
-
+		return false
 	}
 
 	// Prepara os argumentos de compilação
@@ -34,6 +33,8 @@ func Compile(
 	compilacao.Stderr = os.Stderr
 	if err := compilacao.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Erro na compilação: %v\n", err)
-		os.Exit(1)
+		return false
 	}
+
+	return true
 }
