@@ -17,7 +17,7 @@ func Compile(
 	if config.CompilerPath != "" {
 		compilerCmd = config.CompilerPath
 	} else {
-		fmt.Printf("Compilador não especificado.")
+		fmt.Printf("Compiler not specified.")
 		return false
 	}
 
@@ -32,7 +32,7 @@ func Compile(
 	compilacao := exec.Command(compilerCmd, compilerArgs...)
 	compilacao.Stderr = os.Stderr
 	if err := compilacao.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Erro na compilação: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Compilation error: %v\n", err)
 		return false
 	}
 
